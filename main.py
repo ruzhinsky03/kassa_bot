@@ -58,10 +58,21 @@ def handle_message(message):
 
     text = message.text.strip()
 
-    ...
+    pattern = r'^([+-])(\d+)\s+(.+)\s+(банк|наличные)$'
+
+    match = re.match(pattern, text, re.IGNORECASE)
+
+    if not match:
+        return
+
+    sign = match.group(1)
+    amount = int(match.group(2))
+    category = match.group(3)
+    payment = match.group(4)
 
     operation_type = "Доход" if sign == "+" else "Расход"
 
+    # Время UTC+3
     now = (datetime.utcnow() + timedelta(hours=3)).strftime("%d.%m.%Y %H:%M")
 
     sheet.append_row([
