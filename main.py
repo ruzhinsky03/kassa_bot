@@ -72,7 +72,9 @@ def handle_message(message):
 
     operation_type = "Доход" if sign == "+" else "Расход"
 
-    now = datetime.now().strftime("%d.%m.%Y %H:%M")
+    from datetime import datetime, timedelta
+
+now = (datetime.utcnow() + timedelta(hours=3)).strftime("%d.%m.%Y %H:%M")
 
     sheet.append_row([
         now,
