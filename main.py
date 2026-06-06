@@ -54,6 +54,10 @@ day_sheet = client.open_by_key(
     SPREADSHEET_ID
 ).worksheet("День")
 
+week_sheet = client.open_by_key(
+    SPREADSHEET_ID
+).worksheet("Неделя")
+
 # =========================
 # ОТЧЁТЫ
 # =========================
@@ -82,6 +86,43 @@ def send_daily_report():
 
     bot.send_message(CHAT_ID, text)
 
+def send_weekly_report():
+
+    income = week_sheet.acell("B1").value
+    expense = week_sheet.acell("B2").value
+    profit = week_sheet.acell("B3").value
+
+    bank = week_sheet.acell("B5").value
+    cash = week_sheet.acell("B6").value
+    total = week_sheet.acell("B7").value
+
+    per_person = week_sheet.acell("B9").value
+
+    azs = week_sheet.acell("B12").value
+    food = week_sheet.acell("B13").value
+    rent = week_sheet.acell("B14").value
+    profi = week_sheet.acell("B15").value
+    other = week_sheet.acell("B16").value
+
+    text = (
+        f"📊 Недельный отчёт\n\n"
+        f"💰 Доход: {income} ₽\n"
+        f"💸 Расход: {expense} ₽\n"
+        f"📈 Чистыми: {profit} ₽\n\n"
+        f"🏦 Банк: {bank} ₽\n"
+        f"💵 Наличные: {cash} ₽\n"
+        f"📊 Общий остаток: {total} ₽\n\n"
+        f"👷 Каждому из трёх: {per_person} ₽\n\n"
+        f"📉 Аналитика расходов:\n"
+        f"⛽ АЗС: {azs}\n"
+        f"🍔 Еда: {food}\n"
+        f"🏠 Аренда: {rent}\n"
+        f"🔧 Профи: {profi}\n"
+        f"📦 Прочее: {other}"
+    )
+
+    bot.send_message(CHAT_ID, text)
+
 # =========================
 # ОБРАБОТКА СООБЩЕНИЙ
 # =========================
@@ -99,6 +140,17 @@ def report(message):
     bot.reply_to(
         message,
         "✅ Отчёт отправлен"
+    )
+
+
+@bot.message_handler(commands=['weekreport'])
+def weekreport(message):
+
+    send_weekly_report()
+
+    bot.reply_to(
+        message,
+        "✅ Недельный отчёт отправлен"
     )
 
 
