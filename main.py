@@ -75,13 +75,16 @@ def handle_message(message):
     # Время UTC+3
     now = (datetime.utcnow() + timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S")
 
-    sheet.append_row([
+    sheet.append_row(
+    [
         now,
         operation_type,
         amount,
         category,
         payment
-    ])
+    ],
+    value_input_option="USER_ENTERED"
+)
 
     bot.reply_to(message, "✅ Записано")
 
