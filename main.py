@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import telebot
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # =========================
 # ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ
@@ -49,6 +50,38 @@ sheet = client.open_by_key(
     SPREADSHEET_ID
 ).worksheet("Операции")
 
+day_sheet = client.open_by_key(
+    SPREADSHEET_ID
+).worksheet("День")
+
+# =========================
+# ОТЧЁТЫ
+# =========================
+
+CHAT_ID = -1003516318079
+
+def send_daily_report():
+
+    income = day_sheet.acell("B1").value
+    expense = day_sheet.acell("B2").value
+    profit = day_sheet.acell("B3").value
+
+    bank = day_sheet.acell("B5").value
+    cash = day_sheet.acell("B6").value
+    total = day_sheet.acell("B7").value
+
+    text = (
+        f"📅 Ежедневный отчёт\n\n"
+        f"💰 Доход: {income} ₽\n"
+        f"💸 Расход: {expense} ₽\n"
+        f"📈 Чистыми: {profit} ₽\n\n"
+        f"🏦 Банк: {bank} ₽\n"
+        f"💵 Наличные: {cash} ₽\n\n"
+        f"📊 Общий остаток: {total} ₽"
+    )
+
+    bot.send_message(CHAT_ID, text)
+
 # =========================
 # ОБРАБОТКА СООБЩЕНИЙ
 # =========================
@@ -56,6 +89,17 @@ sheet = client.open_by_key(
 @bot.message_handler(commands=['id'])
 def get_chat_id(message):
     bot.reply_to(message, f"Chat ID: {message.chat.id}")
+
+
+@bot.message_handler(commands=['report'])
+def report(message):
+
+    send_daily_report()
+
+    bot.reply_to(
+        message,
+        "✅ Отчёт отправлен"
+    )
 
 
 @bot.message_handler(func=lambda message: True)
@@ -78,20 +122,40 @@ def handle_message(message):
     operation_type = "Доход" if sign == "+" else "Расход"
 
     # Время UTC+3
-    now = (datetime.utcnow() + timedelta(hours=3)).strftime("%Y-%m-%d %H:%M:%S")
+    now = (
+        datetime.utcnow() + timedelta(hours=3)
+    ).strftime("%Y-%m-%d %H:%M:%S")
 
     sheet.append_row(
-    [
-        now,
-        operation_type,
-        amount,
-        category,
-        payment
-    ],
-    value_input_option="USER_ENTERED"
-)
+        [
+            now,
+            operation_type,
+            amount,
+            category,
+            payment
+        ],
+        value_input_option="USER_ENTERED"
+    )
 
     bot.reply_to(message, "✅ Записано")
+
+# =========================
+# ПЛАНИРОВЩИК
+# =========================
+
+scheduler = BackgroundScheduler(
+    timezone="Europe/Moscow"
+)
+
+scheduler.add_job(
+    send_daily_report,
+    "cron",
+    hour=23,
+    minute=0,
+    second=0
+)
+
+scheduler.start()
 
 # =========================
 # ЗАПУСК
