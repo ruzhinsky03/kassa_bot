@@ -53,6 +53,11 @@ sheet = client.open_by_key(
 # ОБРАБОТКА СООБЩЕНИЙ
 # =========================
 
+@bot.message_handler(commands=['id'])
+def get_chat_id(message):
+    bot.reply_to(message, f"Chat ID: {message.chat.id}")
+
+
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
 
