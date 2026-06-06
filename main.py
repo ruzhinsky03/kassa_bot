@@ -1,7 +1,7 @@
 import os
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import telebot
 import gspread
@@ -58,23 +58,11 @@ def handle_message(message):
 
     text = message.text.strip()
 
-    pattern = r'^([+-])(\d+)\s+(.+)\s+(банк|наличные)$'
-
-    match = re.match(pattern, text, re.IGNORECASE)
-
-    if not match:
-        return
-
-    sign = match.group(1)
-    amount = int(match.group(2))
-    category = match.group(3)
-    payment = match.group(4)
+    ...
 
     operation_type = "Доход" if sign == "+" else "Расход"
 
-    from datetime import datetime, timedelta
-
-now = (datetime.utcnow() + timedelta(hours=3)).strftime("%d.%m.%Y %H:%M")
+    now = (datetime.utcnow() + timedelta(hours=3)).strftime("%d.%m.%Y %H:%M")
 
     sheet.append_row([
         now,
