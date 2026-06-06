@@ -132,7 +132,7 @@ def get_chat_id(message):
     bot.reply_to(message, f"Chat ID: {message.chat.id}")
 
 
-@bot.message_handler(commands=['report'])
+@bot.message_handler(commands=['день'])
 def report(message):
 
     send_daily_report()
@@ -143,7 +143,7 @@ def report(message):
     )
 
 
-@bot.message_handler(commands=['weekreport'])
+@bot.message_handler(commands=['неделя'])
 def weekreport(message):
 
     send_weekly_report()
