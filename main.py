@@ -207,6 +207,15 @@ scheduler.add_job(
     second=0
 )
 
+scheduler.add_job(
+    send_weekly_report,
+    "cron",
+    day_of_week="sun",
+    hour=23,
+    minute=59,
+    second=0
+)
+
 scheduler.start()
 
 # =========================
