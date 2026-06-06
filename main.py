@@ -72,7 +72,7 @@ def handle_message(message):
 
     operation_type = "Доход" if sign == "+" else "Расход"
 
-    now = datetime.now().strftime("%d.%m.%Y %H:%M")
+    now = datetime.now()
 
     sheet.append_row([
         now,
